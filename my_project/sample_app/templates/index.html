@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students List</title>
+</head>
+<body>
+    <h1>Students List</h1>
+    <div id="students-list"></div>
+
+    <script>
+        // Fetch data from the Django API
+        fetch('http://127.0.0.1:8000/api/basic/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const studentsList = document.getElementById('students-list');
+                
+                // Check if students key exists in the response
+                if (data.students && Array.isArray(data.students)) {
+                    data.students.forEach(student => {
+                        const studentDiv = document.createElement('div');
+                        studentDiv.innerHTML = `
+                            <p><strong>First Name:</strong> ${student.first_name}</p>
+                            <p><strong>Last Name:</strong> ${student.last_name}</p>
+                            <p><strong>Address:</strong> ${student.address}</p>
+                            <p><strong>Roll Number:</strong> ${student.roll_number}</p>
+                            <p><strong>Mobile:</strong> ${student.mobile}</p>
+                            <hr/>
+                        `;
+                        studentsList.appendChild(studentDiv);
+                    });
+                } else {
+                    studentsList.innerHTML = '<p>No students found.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching students:', error);
+                document.getElementById('students-list').innerHTML = '<p>Error loading students.</p>';
+            });
+    </script>
+</body>
+</html>
